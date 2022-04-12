@@ -1,0 +1,131 @@
+<!-- 
+    参考　
+    https://ics.media/tutorial-three/model_basic/
+    https://threejs.org/docs/#examples/en/loaders/GLTFLoader
+-->
+
+<!-- 
+    three.jsの基本
+    .jsファイルを直接読み込む
+    3Dモデルの読み込み
+
+    立方体を表示
+    マウスで操作
+ -->
+
+
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>3Dモデルの読み込み -three.js(r113.2)の基本-</title>
+
+
+    <!-- three.min.jsを(CDNで)読み込む three.jsの圧縮版 -->
+    <!-- <script src="https://unpkg.com/three@0.113.2/build/three.min.js"></script> -->
+
+    <!-- three.min.jsを(ファイルから直接)読み込む three.jsの圧縮版 -->
+    <script src="./three.min.js"></script>
+
+
+
+    <!-- OrbitControls.jsを(CDNで)読み込む three.jsの圧縮版 -->
+    <!-- <script src="https://unpkg.com/three@0.113.2/examples/js/controls/OrbitControls.js"></script> -->
+    
+    <!-- OrbitControls.jsを(ファイルから直接)読み込む three.jsの圧縮版 -->
+    <script src="./OrbitControls.js"></script>
+
+
+
+    <!-- GLTFLoader.jsを(CDNで)読み込む three.jsの圧縮版 -->
+    <!-- <script src="https://unpkg.com/three@0.113.2/examples/js/loaders/GLTFLoader.js"></script> -->
+    
+    <!-- GLTFLoader.jsを(ファイルから直接)読み込む three.jsの圧縮版 -->
+    <script src="./GLTFLoader.js"></script>
+
+
+
+
+
+    <script>
+      // ページの読み込みを待つ
+      window.addEventListener('DOMContentLoaded', init);
+
+      function init() {
+        // サイズを指定
+        const width = 960;
+        const height = 540;
+
+        // レンダラーを作成
+        const canvasElement = document.querySelector('#myCanvas');
+        const renderer = new THREE.WebGLRenderer({
+          canvas: canvasElement,
+        });
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        //キャンバスのサイズを反映？
+        renderer.setSize(width, height);
+
+        // シーンを作成
+        const scene = new THREE.Scene();
+
+        // カメラを作成
+        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
+        // カメラの初期座標を設定
+        camera.position.set(0, 0, 5);
+
+        // カメラコントローラーを作成
+        const controls = new THREE.OrbitControls(camera, canvasElement);
+
+        // 平行光源を作成
+        const directionalLight = new THREE.DirectionalLight(0xffffff);
+        directionalLight.position.set(1, 1, 1);
+        scene.add(directionalLight);
+        // 環境光を追加
+        const ambientLight = new THREE.AmbientLight(0xffffff);
+        scene.add(ambientLight);
+
+        // 3DS形式のモデルデータを読み込む
+        // const loader = new THREE.TDSLoader();
+
+        //GLB形式のモデルデータを読み込む
+        const loader = new THREE.GLTFLoader();
+
+        // テクスチャーのパスを指定
+        // loader.setResourcePath('models/3ds/portalgun/textures/');
+
+        // 3ds → glbファイルのパスを指定
+        loader.load('cube_medium.glb', function(gltf) {
+          // 読み込み後に3D空間に追加
+          scene.add(gltf.scene);
+        },
+        function ( xhr ) {
+
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+            if(( xhr.loaded / xhr.total * 100 ) >= 100)
+            {
+              console.log("ロード完了！");
+              console.log("「パーフェクトだウォルター」");
+              console.log("「いいセンスだ」");
+            }
+        });
+
+
+
+        
+        tick();
+        // 毎フレーム時に実行されるループイベントです
+        function tick() {
+          // レンダリング
+          renderer.render(scene, camera);
+          requestAnimationFrame(tick);
+        }
+        
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="myCanvas"></canvas>
+  </body>
+</html>
